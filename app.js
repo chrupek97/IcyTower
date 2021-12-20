@@ -1,6 +1,28 @@
+class Block {
+    constructor(positionXStart, positionXEnd, positionY){
+        this.positionXStart = positionXStart;
+        this.positionXEnd = positionXEnd;
+        this.positionY = positionY;
+    }
+
+    positionXStart(){
+        return this.positionXStart;
+    }
+
+    
+    positionXEnd(){
+        return this.positionXEnd;
+    }
+
+    
+    positionY(){
+        return this.positionY;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const character = document.querySelector('.character');
-    const blocks = document.querySelector('.block');
+    const blocks = [];
     const img = document.createElement('img');
     let mainContainer = document.querySelector('.main');
 
@@ -108,25 +130,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     //podwójny skok
-    moveUp = (boost) => {
+    moveUp = ( ) => {
         if (isJumping == true) {
-            bottom += 400;
+            bottom += 600;
             left += 10;
             img.style.bottom = `${bottom}px`;
             isJumping = false;
         }
 
         let jumpInterval = setInterval(() => {
-            bottom -= 20;
+            bottom -= 10;
             img.style.bottom = `${bottom}px`;
 
-            if (bottom < 20) {
+            if (bottom < 10) {
                 clearInterval(jumpInterval);
             }
-        }, 20);
+        }, 10);
+
+        // checkBlock();
     }
 
+    // checkBlock = () => {
+    //     for(let i = 0; i< blocks.length; i++){
+    //         const currBlock = blocks[i];
 
+    //         if((left > currBlock.positionXStart && left < currBlock.positionXEnd) && bottom)
+    //     }
+    // }
 
     generateBlock = (max, min, containerNumber) => {
         const width = Math.random() * (max - min) + min;
@@ -149,6 +179,8 @@ document.addEventListener('DOMContentLoaded', () => {
         block.style.top = `${positionTop}px`;
         block.style.left = `${positionLeft}px`;
         mainContainer.appendChild(block);
+
+        blocks.push(new Block(positionLeft, positionLeft + width, positionTop));
     }
 
     generateBlock(400, 150, 0);
