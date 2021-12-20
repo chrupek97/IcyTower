@@ -1,0 +1,54 @@
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+  }
+
+.left-col, .right-col{
+    width: 250px;
+    background: url(images/column.jpg) repeat;
+    background-size: 300px;
+    height: 100%;
+    position: absolute;
+}
+
+.left-col{
+    left: 0;
+    border-right: 3px solid black;
+}
+
+.right-col{
+    right: 0;
+    border-left: 3px solid black;
+}
+
+.character{
+    width: 50px;
+    height: 100px;
+    position: fixed;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: transform 0.1s;
+}
+
+.character > img {
+    bottom: 0;
+    transition: left 0.1s, bottom 0.1s;
+}
+
+.block {
+    background: url(images/block.png) no-repeat;
+    height: 70px;
+    position: absolute;
+}
+
+.character-container{
+    position: absolute;
+}
+
+body{
+    background: url(images/background.jpg) repeat;
+    background-size: 200px;
+}
