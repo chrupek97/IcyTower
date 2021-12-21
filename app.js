@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             moveRight(acc);
         } else if (e.keyCode === 32) {
             isJumping = true;
-            moveUp(1);
+            moveUp(3);
         } else if (e.keyCode === 37) {
             img.src = 'images/hero-left.png'
             moveLeft(acc);
@@ -109,7 +109,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keyup', isColumnHit)
 
     moveRight = (acc) => {
-        if (left < window.innerWidth - 1250) {
+        const mainMaxWidth =  document.querySelector('.main').offsetWidth;
+        const colMaxWidth = document.querySelector('.left-col').offsetWidth
+
+        if (left < Math.ceil(mainMaxWidth / 2) - colMaxWidth - 50) {
             left += 20 * acc;
             img.style.left = `${left}px`;
             hitColumn = false;
@@ -119,8 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     moveLeft = (acc) => {
-        if (left > 1240 - window.innerWidth) {
-            console.log(left)
+        const mainMaxWidth =  document.querySelector('.main').offsetWidth;
+        const colMaxWidth = document.querySelector('.left-col').offsetWidth
+
+        if (left > colMaxWidth - Math.floor(mainMaxWidth / 2) + 50) {
             left -= 20 * acc;
             img.style.left = `${left}px`;
             hitColumn = false;
@@ -130,9 +135,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     //podwójny skok
-    moveUp = ( ) => {
+    moveUp = (boost) => {
+        const maxHeight = window.innerHeight;
+        
         if (isJumping == true) {
-            bottom += 600;
+            bottom += maxHeight / boost;
             left += 10;
             img.style.bottom = `${bottom}px`;
             isJumping = false;
@@ -166,8 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const maxTop = containerNumber * containerSize + 1;
         const minTop = containerNumber * containerSize;
 
-        const maxLeft = maxWidth - 800;
-        const minLeft = maxWidth - 1600;
+        const minLeft = document.querySelector('.left-col').offsetWidth;
+        const maxLeft = maxWidth - minLeft - width;
 
         const positionTop = Math.random() * (maxTop - minTop) + minTop;
         const positionLeft = Math.random() * (maxLeft - minLeft) + minLeft;
