@@ -1,33 +1,41 @@
 class Block {
-    constructor(positionXStart, positionXEnd, positionY){
+    constructor(positionXStart, positionXEnd, positionY, state) {
         this.positionXStart = positionXStart;
         this.positionXEnd = positionXEnd;
         this.positionY = positionY;
+        this.state = state;
     }
 
-    positionXStart(){
+    positionXStart() {
         return this.positionXStart;
     }
 
-    
-    positionXEnd(){
+
+    positionXEnd() {
         return this.positionXEnd;
     }
 
-    
-    positionY(){
+
+    positionY() {
         return this.positionY;
+    }
+
+    state() {
+        return this.state;
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     const character = document.querySelector('.character');
     const blocks = [];
+    let currLvl = 0;
+    let minPositionCharacter = 0;
+    let maxPostionCharacter = 0;
+    let keyPressed = [];
+    let blockTop = 0;
     const img = document.createElement('img');
     let mainContainer = document.querySelector('.main');
-
     let hitColumn = false;
-
     let left = 0;
     let bottom = 0;
     let isRightRunning = false;
@@ -45,38 +53,59 @@ document.addEventListener('DOMContentLoaded', () => {
     character.appendChild(img);
 
     keyUpControl = (e, acc) => {
-        if (e.keyCode === 39) {
-            img.src = 'images/hero-right.png'
-            moveRight(acc);
-        } else if (e.keyCode === 32) {
+        keyPressed[`keyCode${e.keyCode}`] = false;
+
+        // if (e.keyCode === 39) {
+        //     img.src = 'images/hero-right.png'
+        //     moveRight(acc);
+        // } else 
+        if (e.keyCode === 32 && isJumping == false) {
             isJumping = true;
-            moveUp(3);
-        } else if (e.keyCode === 37) {
-            img.src = 'images/hero-left.png'
-            moveLeft(acc);
-        } else {
-            isRightRunning = false;
-            isLeftRunning = false;
+            moveUp(4);
+            moveDown();
         }
+        // } else if (e.keyCode === 37) {
+        //     img.src = 'images/hero-left.png'
+        //     moveLeft(acc);
+        // } else if(e.keyCode === 32 && e.keyCode === 39){
+        //     moveUp(3);
+        //     moveRight();
+        // } else {
+        //     isRightRunning = false;
+        //     isLeftRunning = false;
+        // }
     }
 
     keyDownControl = (e, acc) => {
-        if (e.keyCode === 39) {
+        keyPressed[`keyCode${e.keyCode}`] = true;
+
+        if (keyPressed.keyCode32 && keyPressed.keyCode39 && isJumping == false) {
+            isJumping = true;
+            moveRight(6);
+            moveUp(1.5);
+            moveDown();
+        } else if (keyPressed.keyCode32 && keyPressed.keyCode37 && isJumping == false) {
+            isJumping = true;
+            moveLeft(6);
+            moveUp(2);
+            moveDown();
+        } else if (keyPressed.keyCode39) {
             isRightRunning = true;
             moveRight(acc);
 
             if (isRightRunning) {
                 setTimeout(() => { img.src = `images/hero-right-run-1.png` }, 20);
             }
-            img.src = 'images/hero-right.png'
-        } else if (e.keyCode === 37) {
+            img.src = 'images/hero-right.png';
+        } else if (keyPressed.keyCode37) {
             isLeftRunning = true;
             moveLeft(acc);
 
             if (isLeftRunning) {
                 setTimeout(() => { img.src = `images/hero-left-run-1.png` }, 20);
             }
-            img.src = 'images/hero-left.png'
+
+            img.src = 'images/hero-left.png';
 
             isRightRunning = false;
         } else {
@@ -109,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keyup', isColumnHit)
 
     moveRight = (acc) => {
-        const mainMaxWidth =  document.querySelector('.main').offsetWidth;
+        const mainMaxWidth = document.querySelector('.main').offsetWidth;
         const colMaxWidth = document.querySelector('.left-col').offsetWidth
 
         if (left < Math.ceil(mainMaxWidth / 2) - colMaxWidth - 50) {
@@ -122,8 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     moveLeft = (acc) => {
-        const mainMaxWidth =  document.querySelector('.main').offsetWidth;
-        const colMaxWidth = document.querySelector('.left-col').offsetWidth
+        const mainMaxWidth = document.querySelector('.main').offsetWidth;
+        const colMaxWidth = document.querySelector('.left-col').offsetWidth;
 
         if (left > colMaxWidth - Math.floor(mainMaxWidth / 2) + 50) {
             left -= 20 * acc;
@@ -132,38 +161,85 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             hitColumn = 'left';
         }
+
+     
     }
 
-    //podwójny skok
     moveUp = (boost) => {
         const maxHeight = window.innerHeight;
-        
-        if (isJumping == true) {
-            bottom += maxHeight / boost;
-            left += 10;
-            img.style.bottom = `${bottom}px`;
-            isJumping = false;
-        }
-
-        let jumpInterval = setInterval(() => {
-            bottom -= 10;
-            img.style.bottom = `${bottom}px`;
-
-            if (bottom < 10) {
-                clearInterval(jumpInterval);
-            }
-        }, 10);
-
-        // checkBlock();
+        bottom += maxHeight / boost;
+        left += 20;
+        img.style.bottom = `${bottom}px`;
     }
 
-    // checkBlock = () => {
-    //     for(let i = 0; i< blocks.length; i++){
-    //         const currBlock = blocks[i];
+    moveDown = () => {
+        let characterJumpOnElem = false;
 
-    //         if((left > currBlock.positionXStart && left < currBlock.positionXEnd) && bottom)
-    //     }
-    // }
+        blockTop = 0;
+        let jumpInterval = setInterval(() => {
+            bottom -= 10;
+
+            if (!characterJumpOnElem) {
+                for (let i = blocks.length - 1; i > 0; i--) {
+                    const currBlock = blocks[i];
+
+                    const colContainerWidth = document.querySelector('.left-col').offsetWidth;
+                    const mainContainerWidth = mainContainer.offsetWidth - (2 * colContainerWidth);
+
+
+                    if ((bottom >= currBlock.positionY && !currBlock.state)
+                        && ((Math.floor(mainContainerWidth / 2) + left) >= currBlock.positionXStart)
+                        && ((Math.floor(mainContainerWidth / 2) + left) <= currBlock.positionXEnd)) {
+                        console.log('xd')
+                        minPositionCharacter = currBlock.positionXStart;
+                        maxPostionCharacter = currBlock.positionXEnd;
+                        blockTop = currBlock.positionY;
+                        characterJumpOnElem = true;
+                        currBlock.state = true;
+                        currLvl += 1;
+                        break;
+                    } else {
+                        characterJumpOnElem = false;
+                        blockTop = 0;
+                        currBlock.state = false;
+                    }
+                }
+            }
+            img.style.bottom = `${bottom}px`;
+
+            //const playerIsOnBlock = checkBlock();
+
+            if (bottom <= blockTop) {
+                clearInterval(jumpInterval);
+                isJumping = false;
+                characterJumpOnElem = false;
+            }
+
+        }, 10);
+    }
+
+    checkBlock = () => {
+        for (let i = blocks.length - 1; i > 0; i--) {
+            const currBlock = blocks[i];
+
+            // console.log(currBlock.positionXStart);
+            // console.log(currBlock.positionXEnd);
+            // console.log(currBlock.positionY);
+
+            // console.log(bottom);
+            const mainContainerWidth = mainContainer.offsetWidth;
+            const colContainerWidth = document.querySelector('.left-col').offsetWidth;
+
+            // console.log((mainContainerWidth - colContainerWidth) / 2);
+            // console.log(mainContainerWidth / 2);
+            console.log(mainContainer.style.left);
+
+            if (bottom <= currBlock.positionY) {
+                console.log('xD')
+                // return currBlock.positionY;
+            }
+        }
+    }
 
     generateBlock = (max, min, containerNumber) => {
         const width = Math.random() * (max - min) + min;
@@ -187,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         block.style.left = `${positionLeft}px`;
         mainContainer.appendChild(block);
 
-        blocks.push(new Block(positionLeft, positionLeft + width, positionTop));
+        blocks.push(new Block(positionLeft - minLeft, positionLeft + width - minLeft, maxHeight - positionTop, false));
     }
 
     generateBlock(400, 150, 0);
