@@ -1,0 +1,72 @@
+body{
+    background: url(../../images/background.jpg) repeat;
+    background-size: auto auto;
+    overflow: hidden;
+}
+
+.page-title{
+    font-family: 'Rock 3D', cursive;
+    font-size: 4rem;
+    color: black;
+    font-weight: bold;
+}
+
+.navigation{
+    font-family: 'Rock 3D', cursive;
+    font-size: 2rem;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+    margin-top: 3rem;
+    width: 50%;
+    border-radius: 30px;
+    background-color: white;
+    opacity: 0.85;
+    padding: 1.5rem;
+}
+
+.option-container{
+    padding: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.back-button-container{
+    margin-top: 5rem;
+    padding: 0.9rem;
+}
+
+.option{
+    color: black;
+    text-decoration: none;
+    transition: transform 0.5s ease-in-out;
+}
+
+.active{
+    border-bottom: 7px solid black;
+}
+
+.navigation > a:hover{
+    transform: scale(1.05);
+}
+
+.character-face-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.character-face-container img {
+    padding: 0 3rem;
+}
+
+.rescale{
+    transform: scale(1.05);
+}
+
+.splitter{
+    margin-top: 5rem;
+    height: 5px;
+    background-color: black;
+}
