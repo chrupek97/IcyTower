@@ -1,0 +1,57 @@
+*, *::after, *::before{
+    padding: 0;
+    margin: 0;
+}
+
+.navigation{
+    font-family: 'Rock 3D', cursive;
+    font-size: 2rem;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+    align-items: center;
+    margin-top: 3rem;
+}
+
+.navigation > a{
+    padding: 0.9rem;
+    color: black;
+    text-decoration: none;
+    transition: transform 0.5s ease-in-out;
+}
+
+.active{
+    border-bottom: 7px solid blue;
+}
+
+.navigation > a:hover{
+    transform: scale(1.05);
+}
+
+.character-face-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.character-face-container > img{
+    padding: 5rem;
+}
+
+.rescale{
+    transform: scale(1.05);
+}
+
+.game-title{
+    font-family: 'Rock 3D', cursive;
+    font-size: 4rem;
+    color: blue;
+    font-weight: bold;
+}
+
+body{
+    background: url(../images/background.jpg);
+    background-size: auto auto;
+    overflow: hidden;
+}
