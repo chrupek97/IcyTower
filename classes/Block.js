@@ -1,22 +1,26 @@
 export default class Block {
-    
-    constructor(positionXStart, positionXEnd, positionY){
+    constructor(positionXStart, positionXEnd, positionY, state) {
         this.positionXStart = positionXStart;
         this.positionXEnd = positionXEnd;
         this.positionY = positionY;
+        this.state = state;
     }
 
-    positionXStart(){
+    positionXStart() {
         return this.positionXStart;
     }
 
-    
-    positionXEnd(){
+
+    positionXEnd() {
         return this.positionXEnd;
     }
 
-    
-    positionY(){
+
+    positionY() {
         return this.positionY;
+    }
+
+    state() {
+        return this.state;
     }
 }
