@@ -1,40 +1,205 @@
-class Block {
-    constructor(positionXStart, positionXEnd, positionY, state) {
-        this.positionXStart = positionXStart;
-        this.positionXEnd = positionXEnd;
-        this.positionY = positionY;
-        this.state = state;
-    }
+import Block from "./classes/Block.js";
+import Character from "./classes/Character.js";
 
-    positionXStart() {
-        return this.positionXStart;
-    }
+function keyUpControl(e, acc, keyPressed, character, blocks) {
+    keyPressed[`keyCode${e.keyCode}`] = false;
 
-
-    positionXEnd() {
-        return this.positionXEnd;
-    }
-
-
-    positionY() {
-        return this.positionY;
-    }
-
-    state() {
-        return this.state;
+    if (e.keyCode === 32 && !character.isJumping) {
+        character.setIsJumping(true);
+        character.moveUp(3);
+        character.moveDown(blocks);
     }
 }
 
+function keyDownControl(e, acc, keyPressed, character, blocks) {
+    keyPressed[`keyCode${e.keyCode}`] = true;
+
+    if (keyPressed.keyCode32 && keyPressed.keyCode39 && character.isJumping == false) {
+        character.setIsJumping(true);
+        character.moveRight(6);
+        character.moveUp(2);
+        character.moveDown(blocks);
+    } else if (keyPressed.keyCode32 && keyPressed.keyCode37 && character.isJumping == false) {
+        character.setIsJumping(true);
+        character.moveLeft(6);
+        character.moveUp(2);
+        character.moveDown(blocks);
+    } else if (keyPressed.keyCode39) {
+        character.setIsRunningRight(true);
+        character.moveRight(acc);
+        console.log(character.positionX)
+
+        if (character.isRunningRight) {
+            setTimeout(() => { 
+                character.setImg('images/hero-right-run-1.png');
+            }, 20);
+        }
+
+        character.setImg('images/hero-right.png');
+        character.setIsRunningLeft(false);
+    } else if (keyPressed.keyCode37) {
+        character.setIsRunningLeft(true);
+        character.moveLeft(acc);
+        console.log(character.positionX)
+
+        if (character.isRunningLeft) {
+            setTimeout(() => { 
+                character.setImg('images/hero-left-run-1.png');
+            }, 20);
+        }
+
+        character.setImg('images/hero-left.png');
+        character.setIsRunningRight(false);
+    } else {
+        character.setIsRunningRight(false);
+        character.setIsRunningLeft(false);
+    }
+}
+
+function isColumnHit(hitColumn) {
+    if (hitColumn != false) {
+        var audio = new Audio('music/column-hit.wav');
+        audio.volume = 1;
+        audio.play();
+
+        if (hitColumn == 'right') {
+            hitColumn = false;
+            left -= 100;
+            img.style.left = `${left}px`;
+        }
+        if (hitColumn == 'left') {
+            hitColumn = false;
+            left += 100;
+            img.style.left = `${left}px`;
+        }
+    }
+}
+
+
+// function moveRight(acc) {
+//     if (left < Math.ceil(mainWidth / 2) - colWidth - 50) {
+//         left += 20 * acc;
+//         img.style.left = `${left}px`;
+//         hitColumn = false;
+//     } else {
+//         hitColumn = 'right';
+//     }
+// }
+
+// function moveLeft(acc){
+//     if (left > colWidth - Math.floor(mainWidth / 2) + 50) {
+//         left -= 20 * acc;
+//         img.style.left = `${left}px`;
+//         hitColumn = false;
+//     } else {
+//         hitColumn = 'left';
+//     }
+// }
+
+// function moveUp(boost) {
+//     const maxHeight = window.innerHeight;
+//     bottom += maxHeight / boost;
+//     left += 20;
+//     img.style.bottom = `${bottom}px`;
+// }
+
+// function moveDown() {
+//     let characterJumpOnElem = false;
+
+//     blockTop = 0;
+//     let jumpInterval = setInterval(() => {
+//         bottom -= 10;
+
+//         if (!characterJumpOnElem) {
+//             for (let i = blocks.length - 1; i > 0; i--) {
+//                 const currBlock = blocks[i];
+
+//                 const colContainerWidth = document.querySelector('.left-col').offsetWidth;
+//                 const mainContainerWidth = mainContainer.offsetWidth - (2 * colContainerWidth);
+
+//                 console.log((Math.floor(mainContainerWidth / 2) + left - 50));
+//                 console.log(currBlock.positionXStart);
+//                 console.log(currBlock.positionXEnd)
+//                 if ((bottom >= currBlock.positionY && !currBlock.state)
+//                     && ((Math.floor(mainContainerWidth / 2) + left) >= currBlock.positionXStart)
+//                     && ((Math.floor(mainContainerWidth / 2) + left) <= currBlock.positionXEnd)) {
+//                     console.log('xd')
+//                     minPositionCharacter = currBlock.positionXStart;
+//                     maxPostionCharacter = currBlock.positionXEnd;
+//                     blockTop = currBlock.positionY;
+//                     characterJumpOnElem = true;
+//                     currBlock.state = true;
+//                     currLvl += 1;
+//                     break;
+//                 } else {
+//                     characterJumpOnElem = false;
+//                     blockTop = 0;
+//                     currBlock.state = false;
+//                 }
+//             }
+//         }
+//         img.style.bottom = `${bottom}px`;
+
+//         //const playerIsOnBlock = checkBlock();
+
+//         if (bottom <= blockTop) {
+//             clearInterval(jumpInterval);
+//             isJumping = false;
+//             characterJumpOnElem = false;
+//         }
+
+//     }, 10);
+// }
+
+function generateBlock(mainContainer, blocks, max, min, containerNumber) {
+    const width = Math.random() * (max - min) + min;
+    const maxHeight = window.innerHeight;
+    const maxWidth = window.innerWidth;
+    const containerSize = Math.floor(maxHeight / 5);
+    const maxTop = containerNumber * containerSize + 1;
+    const minTop = containerNumber * containerSize;
+
+    const minLeft = document.querySelector('.left-col').offsetWidth + 100;
+    const maxLeft = maxWidth - minLeft - width - 100;
+
+    const positionTop = Math.random() * (maxTop - minTop) + minTop;
+    const positionLeft = Math.random() * (maxLeft - minLeft) + minLeft;
+
+    const block = document.createElement('div');
+
+    block.classList.add('block');
+    block.style.width = `${width}px`;
+    block.style.top = `${positionTop}px`;
+    block.style.left = `${positionLeft}px`;
+    mainContainer.appendChild(block);
+
+    blocks.push(new Block(positionLeft - minLeft, positionLeft + width - minLeft, maxHeight - positionTop, false));
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
-    const character = document.querySelector('.character');
+    const characterContainer = document.querySelector('.character');
+    const imgContainer = document.createElement('img');
+    const mainContainer = document.querySelector('.main');
+
+    const mainWidth = document.querySelector('.main').offsetWidth;
+    const colWidth = document.querySelector('.left-col').offsetWidth;
+    const charWidth = document.querySelector('.character').offsetWidth;
+
+    const positionX = (mainWidth - 2 * colWidth) / 2 - charWidth / 2;
+    imgContainer.src = 'images/hero-right-run-1.png';
+    imgContainer.height = '100';
+
+    const character = new Character(positionX, 0, false, imgContainer, colWidth - charWidth / 2, mainWidth - colWidth - charWidth);
+    character.updatePosition();
+
     const blocks = [];
-    let currLvl = 0;
-    let minPositionCharacter = 0;
-    let maxPostionCharacter = 0;
+
+    // let minPositionCharacter = 0;
+    // let maxPostionCharacter = 0;
     let keyPressed = [];
     let blockTop = 0;
-    const img = document.createElement('img');
-    let mainContainer = document.querySelector('.main');
+
     let hitColumn = false;
     let left = 0;
     let bottom = 0;
@@ -42,235 +207,26 @@ document.addEventListener('DOMContentLoaded', () => {
     let isLeftRunning = false;
     let isJumping = false;
 
-    img.classList.add('character-container');
-    img.src = 'images/hero-right.png';
-    img.height = '100'
+    // img.classList.add('character-container');
+    // img.src = 'images/hero-right.png';
+    // img.height = '100'
 
     // var audio = new Audio('music/main-music.mp3');
     // audio.volume = 0.1;
     // audio.play();
 
-    character.appendChild(img);
+    characterContainer.appendChild(imgContainer);
 
-    keyUpControl = (e, acc) => {
-        keyPressed[`keyCode${e.keyCode}`] = false;
-
-        // if (e.keyCode === 39) {
-        //     img.src = 'images/hero-right.png'
-        //     moveRight(acc);
-        // } else 
-        if (e.keyCode === 32 && isJumping == false) {
-            isJumping = true;
-            moveUp(4);
-            moveDown();
-        }
-        // } else if (e.keyCode === 37) {
-        //     img.src = 'images/hero-left.png'
-        //     moveLeft(acc);
-        // } else if(e.keyCode === 32 && e.keyCode === 39){
-        //     moveUp(3);
-        //     moveRight();
-        // } else {
-        //     isRightRunning = false;
-        //     isLeftRunning = false;
-        // }
-    }
-
-    keyDownControl = (e, acc) => {
-        keyPressed[`keyCode${e.keyCode}`] = true;
-
-        if (keyPressed.keyCode32 && keyPressed.keyCode39 && isJumping == false) {
-            isJumping = true;
-            moveRight(6);
-            moveUp(1.5);
-            moveDown();
-        } else if (keyPressed.keyCode32 && keyPressed.keyCode37 && isJumping == false) {
-            isJumping = true;
-            moveLeft(6);
-            moveUp(2);
-            moveDown();
-        } else if (keyPressed.keyCode39) {
-            isRightRunning = true;
-            moveRight(acc);
-
-            if (isRightRunning) {
-                setTimeout(() => { img.src = `images/hero-right-run-1.png` }, 20);
-            }
-            img.src = 'images/hero-right.png';
-        } else if (keyPressed.keyCode37) {
-            isLeftRunning = true;
-            moveLeft(acc);
-
-            if (isLeftRunning) {
-                setTimeout(() => { img.src = `images/hero-left-run-1.png` }, 20);
-            }
-
-            img.src = 'images/hero-left.png';
-
-            isRightRunning = false;
-        } else {
-            isRightRunning = false;
-            isLeftRunning = false;
-        }
-    }
-
-    isColumnHit = () => {
-        if (hitColumn != false) {
-            var audio = new Audio('music/column-hit.wav');
-            audio.volume = 1;
-            audio.play();
-
-            if (hitColumn == 'right') {
-                hitColumn = false;
-                left -= 100;
-                img.style.left = `${left}px`;
-            }
-            if (hitColumn == 'left') {
-                hitColumn = false;
-                left += 100;
-                img.style.left = `${left}px`;
-            }
-        }
-    }
-
-    document.addEventListener('keyup', (e) => keyUpControl(e, 0.8));
-    document.addEventListener('keydown', (e) => keyDownControl(e, 1.5));
-    document.addEventListener('keyup', isColumnHit)
-
-    moveRight = (acc) => {
-        const mainMaxWidth = document.querySelector('.main').offsetWidth;
-        const colMaxWidth = document.querySelector('.left-col').offsetWidth
-
-        if (left < Math.ceil(mainMaxWidth / 2) - colMaxWidth - 50) {
-            left += 20 * acc;
-            img.style.left = `${left}px`;
-            hitColumn = false;
-        } else {
-            hitColumn = 'right';
-        }
-    }
-
-    moveLeft = (acc) => {
-        const mainMaxWidth = document.querySelector('.main').offsetWidth;
-        const colMaxWidth = document.querySelector('.left-col').offsetWidth;
-
-        if (left > colMaxWidth - Math.floor(mainMaxWidth / 2) + 50) {
-            left -= 20 * acc;
-            img.style.left = `${left}px`;
-            hitColumn = false;
-        } else {
-            hitColumn = 'left';
-        }
-
-     
-    }
-
-    moveUp = (boost) => {
-        const maxHeight = window.innerHeight;
-        bottom += maxHeight / boost;
-        left += 20;
-        img.style.bottom = `${bottom}px`;
-    }
-
-    moveDown = () => {
-        let characterJumpOnElem = false;
-
-        blockTop = 0;
-        let jumpInterval = setInterval(() => {
-            bottom -= 10;
-
-            if (!characterJumpOnElem) {
-                for (let i = blocks.length - 1; i > 0; i--) {
-                    const currBlock = blocks[i];
-
-                    const colContainerWidth = document.querySelector('.left-col').offsetWidth;
-                    const mainContainerWidth = mainContainer.offsetWidth - (2 * colContainerWidth);
+    document.addEventListener('keyup', (e) => keyUpControl(e, 0.8, keyPressed, character, blocks));
+    document.addEventListener('keydown', (e) => keyDownControl(e, 1.5, keyPressed, character, blocks));
+    document.addEventListener('keyup', (e) => isColumnHit(hitColumn))
 
 
-                    if ((bottom >= currBlock.positionY && !currBlock.state)
-                        && ((Math.floor(mainContainerWidth / 2) + left) >= currBlock.positionXStart)
-                        && ((Math.floor(mainContainerWidth / 2) + left) <= currBlock.positionXEnd)) {
-                        console.log('xd')
-                        minPositionCharacter = currBlock.positionXStart;
-                        maxPostionCharacter = currBlock.positionXEnd;
-                        blockTop = currBlock.positionY;
-                        characterJumpOnElem = true;
-                        currBlock.state = true;
-                        currLvl += 1;
-                        break;
-                    } else {
-                        characterJumpOnElem = false;
-                        blockTop = 0;
-                        currBlock.state = false;
-                    }
-                }
-            }
-            img.style.bottom = `${bottom}px`;
-
-            //const playerIsOnBlock = checkBlock();
-
-            if (bottom <= blockTop) {
-                clearInterval(jumpInterval);
-                isJumping = false;
-                characterJumpOnElem = false;
-            }
-
-        }, 10);
-    }
-
-    checkBlock = () => {
-        for (let i = blocks.length - 1; i > 0; i--) {
-            const currBlock = blocks[i];
-
-            // console.log(currBlock.positionXStart);
-            // console.log(currBlock.positionXEnd);
-            // console.log(currBlock.positionY);
-
-            // console.log(bottom);
-            const mainContainerWidth = mainContainer.offsetWidth;
-            const colContainerWidth = document.querySelector('.left-col').offsetWidth;
-
-            // console.log((mainContainerWidth - colContainerWidth) / 2);
-            // console.log(mainContainerWidth / 2);
-            console.log(mainContainer.style.left);
-
-            if (bottom <= currBlock.positionY) {
-                console.log('xD')
-                // return currBlock.positionY;
-            }
-        }
-    }
-
-    generateBlock = (max, min, containerNumber) => {
-        const width = Math.random() * (max - min) + min;
-        const maxHeight = window.innerHeight;
-        const maxWidth = window.innerWidth;
-        const containerSize = Math.floor(maxHeight / 5);
-        const maxTop = containerNumber * containerSize + 1;
-        const minTop = containerNumber * containerSize;
-
-        const minLeft = document.querySelector('.left-col').offsetWidth;
-        const maxLeft = maxWidth - minLeft - width;
-
-        const positionTop = Math.random() * (maxTop - minTop) + minTop;
-        const positionLeft = Math.random() * (maxLeft - minLeft) + minLeft;
-
-        const block = document.createElement('div');
-
-        block.classList.add('block');
-        block.style.width = `${width}px`;
-        block.style.top = `${positionTop}px`;
-        block.style.left = `${positionLeft}px`;
-        mainContainer.appendChild(block);
-
-        blocks.push(new Block(positionLeft - minLeft, positionLeft + width - minLeft, maxHeight - positionTop, false));
-    }
-
-    generateBlock(400, 150, 0);
-    generateBlock(400, 150, 1);
-    generateBlock(400, 150, 2);
-    generateBlock(400, 150, 3);
-    generateBlock(400, 150, 4);
+    generateBlock(mainContainer, blocks, 400, 150, 0);
+    generateBlock(mainContainer, blocks, 400, 150, 1);
+    generateBlock(mainContainer, blocks, 400, 150, 2);
+    generateBlock(mainContainer, blocks, 400, 150, 3);
+    generateBlock(mainContainer, blocks, 400, 150, 4);
 
     // let width = 50
     // let height = 50
